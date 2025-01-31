@@ -1,0 +1,9 @@
+*.sln
+.vs/
+Debug/
+External/
+Release/
+x64/
+Untitled_Game_1/x64
+Untitled_Game_1/Debug
+Untitled_Game_1/Release
