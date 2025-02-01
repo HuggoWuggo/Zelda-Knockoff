@@ -83,7 +83,7 @@ bool TileMap::load(const std::filesystem::path& tileset, sf::Vector2u tileSize, 
             }
             else if (tiles_c[i + j * 10] == 'f') {
                 cell.setScale({ 1.0f, 0.6f });
-                cell.setPosition({ i * 64.0f, j * 64.0f + 30.f });
+                cell.setPosition({ i * 64.0f, j * 64.0f + 40.f });
             }
             else {
                 cell.setScale({ 1.0f, 1.0f });

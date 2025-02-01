@@ -44,6 +44,12 @@ Player::Player() : t_player(), s_player(t_player, 32, 32)
 		{{32, 96}, {32, 32}},
 	};
 
+    std::vector <sf::IntRect> fall_frames = {
+        {{0, 128}, {32, 32}},
+        {{32, 128}, {32, 32}},
+        {{64, 128}, {32, 32}},
+    };
+
 	s_player.addAnimation("idle_d", idleFrames_D, 100.0f);
 	s_player.addAnimation("idle_u", idleFrames_U, 100.0f);
 	s_player.addAnimation("idle_l", idleFrames_L, 150.0f);
@@ -52,6 +58,7 @@ Player::Player() : t_player(), s_player(t_player, 32, 32)
 	s_player.addAnimation("walk_up", walkFrames_Up, 10.0f);
 	s_player.addAnimation("walk_left", walkFrames_Left, 10.0f);
 	s_player.addAnimation("walk_right", walkFrames_Right, 10.0f);
+	s_player.addAnimation("fall", fall_frames, 10.0f);
 
 	s_player.switchAnimation("idle_d");
 	s_player.setScale(sf::Vector2f(2.0f, 2.0f));
@@ -91,44 +98,47 @@ void Player::move(float speed, std::vector<Tile> tiles)
     }
 
     // Store the current animation state
-    static std::string currentAnimation = "idle"; // Default animation
+    static std::string currentAnimation = "idle_d"; // Default animation
 
     // Handle animation changes based on movement
-    if (direction.x > 0) {
-        if (currentAnimation != "walk_right") {
-            s_player.switchAnimation("walk_right");
-            currentAnimation = "walk_right";
+    if (canMove == true)
+    {
+        if (direction.x > 0) {
+            if (currentAnimation != "walk_right") {
+                s_player.switchAnimation("walk_right");
+                currentAnimation = "walk_right";
+            }
         }
-    }
-    else if (direction.x < 0) {
-        if (currentAnimation != "walk_left") {
-            s_player.switchAnimation("walk_left");
-            currentAnimation = "walk_left";
+        else if (direction.x < 0) {
+            if (currentAnimation != "walk_left") {
+                s_player.switchAnimation("walk_left");
+                currentAnimation = "walk_left";
+            }
         }
-    }
-    else if (direction.y > 0) {
-        if (currentAnimation != "walk_down") {
-            s_player.switchAnimation("walk_down");
-            currentAnimation = "walk_down";
+        else if (direction.y > 0) {
+            if (currentAnimation != "walk_down") {
+                s_player.switchAnimation("walk_down");
+                currentAnimation = "walk_down";
+            }
         }
-    }
-    else if (direction.y < 0) {
-        if (currentAnimation != "walk_up") {
-            s_player.switchAnimation("walk_up");
-            currentAnimation = "walk_up";
+        else if (direction.y < 0) {
+            if (currentAnimation != "walk_up") {
+                s_player.switchAnimation("walk_up");
+                currentAnimation = "walk_up";
+            }
         }
-    }
-    else {
-        if (currentAnimation != "idle") {
-            if (currentAnimation == "walk_down")
-                s_player.switchAnimation("idle_d");
-            else if (currentAnimation == "walk_up")
-                s_player.switchAnimation("idle_u");
-            else if (currentAnimation == "walk_left")
-                s_player.switchAnimation("idle_l");
-            else if (currentAnimation == "walk_right")
-                s_player.switchAnimation("idle_r");
-            currentAnimation = "idle";
+        else {
+            if (currentAnimation != "idle") {
+                if (currentAnimation == "walk_down")
+                    s_player.switchAnimation("idle_d");
+                else if (currentAnimation == "walk_up")
+                    s_player.switchAnimation("idle_u");
+                else if (currentAnimation == "walk_left")
+                    s_player.switchAnimation("idle_l");
+                else if (currentAnimation == "walk_right")
+                    s_player.switchAnimation("idle_r");
+                currentAnimation = "idle";
+            }
         }
     }
 
@@ -150,14 +160,19 @@ void Player::move(float speed, std::vector<Tile> tiles)
             // Check for collisions in the intended direction
             if (nextPosition.findIntersection(tile.shape.getGlobalBounds())) {
                 // Block movement in the direction of the collision
-                if (direction.x > 0)
-                    direction.x = 0.f;  // Block right movement
-                if (direction.x < 0)
-                    direction.x = 0.f;  // Block left movement
-                if (direction.y > 0)
-                    direction.y = 0.f;  // Block down movement
-                if (direction.y < 0)
-                    direction.y = 0.f;  // Block up movement
+                if (tile.collidable && tile.type == 'f') {
+					falling = true;
+                }
+                else {
+                    if (direction.x > 0)
+                        direction.x = 0.f;  // Block right movement
+                    if (direction.x < 0)
+                        direction.x = 0.f;  // Block left movement
+                    if (direction.y > 0)
+                        direction.y = 0.f;  // Block down movement
+                    if (direction.y < 0)
+                        direction.y = 0.f;  // Block up movement
+                }
             }
         }
     }
@@ -239,6 +254,20 @@ void Player::fade_clock()
     }
 }
 
+void Player::isFalling()
+{
+    if (falling == true && fall_count < 134) {
+        canMove = false;
+        fall_count += 6;
+        s_player.move({ 0, 6 });
+    }
+    else if (fall_count >= 134) {
+        canMove = true;
+        falling = false;
+        fall_count = 0;
+    }
+}
+
 void Player::render(sf::RenderWindow *window)
 {
     window->draw(s_player);
@@ -254,6 +283,8 @@ void Player::update(sf::Time dt, std::vector<Tile> tiles, Maps *maps)
     fade_clock();
     fadeRect.setFillColor(sf::Color(0, 0, 0, static_cast<uint8_t>(alpha)));
     
+	isFalling();
+
     move_tiles(maps);
 	move(4.0f, tiles);
 	

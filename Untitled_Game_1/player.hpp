@@ -26,15 +26,20 @@ private:
 	sf::RectangleShape fadeRect;
 	sf::Clock fadeClock;
 
-	bool can_switch = true;
+	int fall_count = 0;
+
 	float alpha = 0;
+
+	bool can_switch = true;
 	bool reached = false;
 	bool canMove = true;
 	bool start;
+	bool falling = false;
 
 	void move(float speed, std::vector<Tile> tiles);
 	void move_tiles(Maps *maps);
 	void fade_clock();
+	void isFalling();
 };
 
 #endif // DEBUG
