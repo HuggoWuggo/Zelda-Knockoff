@@ -282,8 +282,8 @@ void Player::update(sf::Time dt, std::vector<Tile> tiles, Maps *maps)
 
     fade_clock();
     fadeRect.setFillColor(sf::Color(0, 0, 0, static_cast<uint8_t>(alpha)));
-    
-	isFalling();
+	
+    isFalling();
 
     move_tiles(maps);
 	move(4.0f, tiles);
