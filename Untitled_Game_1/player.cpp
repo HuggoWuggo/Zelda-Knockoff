@@ -50,15 +50,22 @@ Player::Player() : t_player(), s_player(t_player, 32, 32)
         {{64, 128}, {32, 32}},
     };
 
+    std::vector <sf::IntRect> jump_framesD = {
+        {{0, 224}, {32, 32}},
+        {{32, 224}, {32, 32}},
+        {{64, 224}, {32, 32}},
+    };
+
 	s_player.addAnimation("idle_d", idleFrames_D, 100.0f);
 	s_player.addAnimation("idle_u", idleFrames_U, 100.0f);
 	s_player.addAnimation("idle_l", idleFrames_L, 150.0f);
 	s_player.addAnimation("idle_r", idleFrames_R, 150.0f);
 	s_player.addAnimation("walk_down", walkFrames_Down, 10.0f);
 	s_player.addAnimation("walk_up", walkFrames_Up, 10.0f);
-	s_player.addAnimation("walk_left", walkFrames_Left, 10.0f);
-	s_player.addAnimation("walk_right", walkFrames_Right, 10.0f);
+	s_player.addAnimation("walk_left", walkFrames_Left, 8.0f);
+	s_player.addAnimation("walk_right", walkFrames_Right, 8.0f);
 	s_player.addAnimation("fall", fall_frames, 10.0f);
+	s_player.addAnimation("jump_d", jump_framesD, 10.0f);
 
 	s_player.switchAnimation("idle_d");
 	s_player.setScale(sf::Vector2f(2.0f, 2.0f));
@@ -96,9 +103,6 @@ void Player::move(float speed, std::vector<Tile> tiles)
         float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
         direction /= length;  // Normalize the vector
     }
-
-    // Store the current animation state
-    static std::string currentAnimation = "idle_d"; // Default animation
 
     // Handle animation changes based on movement
     if (canMove == true)
@@ -187,8 +191,6 @@ void Player::move_tiles(Maps* maps) {
     size_t size = 0;
     size_t size_c = 0;
 
-    std::string file_name = "Maps/row_" + std::to_string(maps->x) + ".txt";
-
     int x_p = maps->x;
     int y_p = maps->y;
 
@@ -201,29 +203,45 @@ void Player::move_tiles(Maps* maps) {
             maps->y -= 1;
         }
     }
-    else {
-        if (s_player.getPosition().y >= 480.0f) {
-            fadeClock.restart();
+    else if (s_player.getPosition().y >= 480.0f) {
+        fadeClock.restart();
 
-            if (alpha == 255)
-            {
-                s_player.setPosition({ s_player.getPosition().x, s_player.getPosition().y - 500 });
-                maps->y += 1;
-            }
+        if (alpha == 255)
+        {
+            s_player.setPosition({ s_player.getPosition().x, s_player.getPosition().y - 500 });
+            maps->y += 1;
         }
-    }
+	}
+	else if (s_player.getPosition().x <= -60.0f) {
+		fadeClock.restart();
+		if (alpha == 255)
+		{
+			s_player.setPosition({ s_player.getPosition().x + 640, s_player.getPosition().y });
+			maps->x -= 1;
+		}
+	}
+	else if (s_player.getPosition().x >= 650.0f) {
+		fadeClock.restart();
+		if (alpha == 255)
+		{
+			s_player.setPosition({ s_player.getPosition().x - 640, s_player.getPosition().y });
+			maps->x += 1;
+		}
+	}
 
     // We assume maps->map has methods for loading data
     // If the `processFileAndReturn*` methods use dynamic memory, ensure cleanup happens
     char* level_c = nullptr;
     int* level = nullptr;
 
-    // Make sure previously loaded data is cleaned up to avoid overlap
-    level = maps->map->processFileAndReturnInts(file_name, size, maps);
-    level_c = maps->map->processFileAndReturnChars(file_name, size_c, maps);
-
     if ((x_p != maps->x || y_p != maps->y) || start == true)
     {
+        std::string file_name = "Maps/row_" + std::to_string(maps->x) + ".txt";
+
+        // Make sure previously loaded data is cleaned up to avoid overlap
+        level = maps->map->processFileAndReturnInts(file_name, size, maps);
+        level_c = maps->map->processFileAndReturnChars(file_name, size_c, maps);
+
         // Only reload the map if necessary
         if (!(maps->map->load("res/overworld.png", { 64, 64 }, level, level_c, 10, 11))) {
             std::cerr << "Error: Could not load tilemap." << std::endl;
@@ -256,15 +274,22 @@ void Player::fade_clock()
 
 void Player::isFalling()
 {
-    if (falling == true && fall_count < 134) {
+    if (falling == true && fall_count < 142) {
         canMove = false;
-        fall_count += 6;
-        s_player.move({ 0, 6 });
+        fall_count += 5;
+        s_player.move({ 0, 5 });
+
+        if (isJumping == false) {
+            s_player.switchAnimation("jump_d");
+            isJumping = true;
+        }
     }
-    else if (fall_count >= 134) {
+    else if (fall_count >= 142) {
         canMove = true;
         falling = false;
+		isJumping = false;
         fall_count = 0;
+		s_player.switchAnimation("idle_d");
     }
 }
 

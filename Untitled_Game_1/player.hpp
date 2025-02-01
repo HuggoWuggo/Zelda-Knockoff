@@ -35,6 +35,10 @@ private:
 	bool canMove = true;
 	bool start;
 	bool falling = false;
+	bool isJumping = false;
+
+	// Store the current animation state
+	std::string currentAnimation; // Default animation
 
 	void move(float speed, std::vector<Tile> tiles);
 	void move_tiles(Maps *maps);

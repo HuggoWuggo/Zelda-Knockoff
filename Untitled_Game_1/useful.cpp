@@ -77,7 +77,7 @@ bool TileMap::load(const std::filesystem::path& tileset, sf::Vector2u tileSize, 
                 cell.setScale({ 1.0f, 0.5f });
                 cell.setPosition({ i * 64.0f, j * 64.0f });
             }
-            else if (tiles_c[i + j * 10] == 'h') {
+            else if (tiles_c[i + j * 10] == 'H') {
                 cell.setScale({ 1.0f, 0.2f });
                 cell.setPosition({ i * 64.0f, j * 64.0f  + 54.0f});
             }
@@ -262,13 +262,13 @@ void AnimatableSprite::switchAnimation(const std::string& name)
 }
 
 void AnimatableSprite::update(sf::Time deltaTime) {
-    // DeltaTime
+    //// DeltaTime
     //if (m_currentAnimation.empty()) {
     //    return; // No animation set yet
     //}
 
     //Animation& animation = m_animations[m_currentAnimation];
-    //animation.elapsedTime += deltaTime;
+    //animation.elapsedTime += (deltaTime / 500.f);
 
     //// Change frame if enough time has passed
     //if (animation.elapsedTime >= sf::seconds(1.f / animation.frameRate)) {
@@ -284,7 +284,7 @@ void AnimatableSprite::update(sf::Time deltaTime) {
 
     Animation& animation = m_animations[m_currentAnimation];
 
-    // Increment the frame counter
+    //// Increment the frame counter
     animation.frameCounter++;
 
     // If enough frames have passed, change the frame
