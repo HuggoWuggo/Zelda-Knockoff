@@ -24,22 +24,22 @@ Player::Player() : t_player(), s_player(t_player, 32, 32)
         {{64, 96}, {32, 32}},
     };
 
-    std::vector <sf::IntRect> walkFrames_Down = {
+    std::vector <sf::IntRect> walkFramesD = {
         {{0, 0}, {32, 32}},
         {{32, 0}, {32, 32}},
     };
 
-	std::vector <sf::IntRect> walkFrames_Up = {
+	std::vector <sf::IntRect> walkFramesU = {
 		{{0, 32}, {32, 32}},
 		{{32, 32}, {32, 32}},
 	};
 
-	std::vector <sf::IntRect> walkFrames_Left = {
+	std::vector <sf::IntRect> walkFramesL = {
 		{{0, 64}, {32, 32}},
 		{{32, 64}, {32, 32}},
 	};
 
-	std::vector <sf::IntRect> walkFrames_Right = {
+	std::vector <sf::IntRect> walkFramesR = {
 		{{0, 96}, {32, 32}},
 		{{32, 96}, {32, 32}},
 	};
@@ -56,16 +56,36 @@ Player::Player() : t_player(), s_player(t_player, 32, 32)
         {{64, 224}, {32, 32}},
     };
 
+    std::vector <sf::IntRect> pickup_framesD = {
+        {{0, 256}, {32, 32}},
+    };
+
+    std::vector <sf::IntRect> pickup_framesU = {
+        {{32, 256}, {32, 32}},
+    };
+
+    std::vector <sf::IntRect> pickup_framesL = {
+        {{64, 256}, {32, 32}},
+    };
+
+    std::vector <sf::IntRect> pickup_framesR = {
+        {{96, 256}, {32, 32}},
+    };
+
 	s_player.addAnimation("idle_d", idleFrames_D, 100.0f);
 	s_player.addAnimation("idle_u", idleFrames_U, 100.0f);
 	s_player.addAnimation("idle_l", idleFrames_L, 150.0f);
 	s_player.addAnimation("idle_r", idleFrames_R, 150.0f);
-	s_player.addAnimation("walk_down", walkFrames_Down, 10.0f);
-	s_player.addAnimation("walk_up", walkFrames_Up, 10.0f);
-	s_player.addAnimation("walk_left", walkFrames_Left, 8.0f);
-	s_player.addAnimation("walk_right", walkFrames_Right, 8.0f);
+	s_player.addAnimation("walk_down", walkFramesD, 10.0f);
+	s_player.addAnimation("walk_up", walkFramesU, 10.0f);
+	s_player.addAnimation("walk_left", walkFramesL, 8.0f);
+	s_player.addAnimation("walk_right", walkFramesR, 8.0f);
 	s_player.addAnimation("fall", fall_frames, 10.0f);
 	s_player.addAnimation("jump_d", jump_framesD, 10.0f);
+    s_player.addAnimation("pickup_d", pickup_framesD, 10.0f);
+    s_player.addAnimation("pickup_u", pickup_framesU, 10.0f);
+    s_player.addAnimation("pickup_l", pickup_framesL, 10.0f);
+    s_player.addAnimation("pickup_r", pickup_framesR, 10.0f);
 
 	s_player.switchAnimation("idle_d");
 	s_player.setScale(sf::Vector2f(2.0f, 2.0f));
@@ -83,7 +103,7 @@ Player::Player() : t_player(), s_player(t_player, 32, 32)
 	start = true;
 }
 
-void Player::move(float speed, std::vector<Tile> tiles)
+void Player::move(float speed, std::vector<Tile> tiles, Maps* maps)
 {
     // Create a vector to accumulate direction inputs
     sf::Vector2f direction(0.f, 0.f);
@@ -148,9 +168,9 @@ void Player::move(float speed, std::vector<Tile> tiles)
 
     // Now, check for collisions in the intended direction
     for (auto& tile : tiles) {
-        if (tile.collidable && tile.type != '_') {
-            sf::FloatRect nextPosition = m_player.getGlobalBounds();
+        sf::FloatRect nextPosition = m_player.getGlobalBounds();
 
+        if (tile.collidable && tile.type != '_') {
             // Calculate the player's next position based on the movement direction
             if (direction.x > 0)
                 nextPosition.position.x += speed;  // Moving right
@@ -166,6 +186,23 @@ void Player::move(float speed, std::vector<Tile> tiles)
                 // Block movement in the direction of the collision
                 if (tile.collidable && tile.type == 'f') {
 					falling = true;
+                }
+                else if (tile.collidable && tile.type == 'p' && sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Q)) {
+                    canMove = false;
+
+                    if (currentAnimation == "walk_down") {
+                        s_player.switchAnimation("pickup_d");
+                    }
+                    else if (currentAnimation == "walk_up") {
+                        s_player.switchAnimation("pickup_u");
+                    }
+                    else if (currentAnimation == "walk_left") {
+                        s_player.switchAnimation("pickup_l");
+                    }
+                    else if (currentAnimation == "walk_right") {
+                        s_player.switchAnimation("pickup_r");
+                    }
+                    
                 }
                 else {
                     if (direction.x > 0)
@@ -311,7 +348,11 @@ void Player::update(sf::Time dt, std::vector<Tile> tiles, Maps *maps)
     isFalling();
 
     move_tiles(maps);
-	move(4.0f, tiles);
+	move(4.0f, tiles, maps);
 	
     s_player.update(dt);
+}
+
+void Player::pickup()
+{
 }

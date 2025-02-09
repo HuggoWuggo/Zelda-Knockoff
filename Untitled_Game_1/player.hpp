@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <cstdint>
+#include <optional>
 
 #include "useful.hpp"
 #include "bar.hpp"
@@ -18,7 +19,7 @@ public:
 	Bar bar;
 
 	void render(sf::RenderWindow *window);
-	void update(sf::Time dt, std::vector<Tile> tiles, Maps *maps);
+	void update(sf::Time dt, std::vector<Tile> tiles, Maps* maps);
 
 	Player();
 private:
@@ -40,10 +41,11 @@ private:
 	// Store the current animation state
 	std::string currentAnimation; // Default animation
 
-	void move(float speed, std::vector<Tile> tiles);
+	void move(float speed, std::vector<Tile> tiles, Maps* maps);
 	void move_tiles(Maps *maps);
 	void fade_clock();
 	void isFalling();
+	void pickup();
 };
 
 #endif // DEBUG

@@ -93,11 +93,21 @@ bool TileMap::load(const std::filesystem::path& tileset, sf::Vector2u tileSize, 
             // Position the cell at (i * gridCellSize, j * gridCellSize)
             cells.push_back({
                 i + j * 10,
+                j,
+                i,
                 cell,
                 tiles_c[i + j * 10] != '_',// Set collidable to true if the cell is collidable
                 tiles_c[i + j * 10]
                 });
         }
+    }
+
+    for (int i = 0; i < sizeof(tiles); i++) {
+        tile_v[i] = tiles[i];
+    }
+
+    for (int i = 0; i < sizeof(tiles_c); i++) {
+        tile_c_v[i] = tiles_c[i];
     }
 
 
@@ -220,7 +230,6 @@ char* TileMap::processFileAndReturnChars(const std::string& filename, size_t& si
 
     return charPtr; // Return the dynamically allocated array
 }
-
 
 
 // Private

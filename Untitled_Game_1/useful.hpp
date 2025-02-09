@@ -14,7 +14,9 @@ sf::Time dt(sf::Clock clock);
 class TileMap;
 
 struct Tile {
-	int tile_index;
+	int index;
+	int x;
+	int y;
 	sf::RectangleShape shape;
 	bool collidable;
 	char type;
@@ -39,6 +41,9 @@ public:
 private:
 
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+
+	int tile_v[110];
+	char tile_c_v[110];
 
 	sf::RectangleShape cell;
 	sf::RenderWindow *window;

@@ -16,7 +16,7 @@ int main()
     TileMap map(&window);
 
     Maps maps = {
-        0,
+        1,
         2,
         &map,
     };
@@ -31,6 +31,7 @@ int main()
             // parse events
             if (event->is<sf::Event::Closed>())
                 window.close();
+            
         }
 
         // update
