@@ -7,3 +7,5 @@ Just credit me if you do.
 Any Issues, you know where to go.
 
 [![Play on Itch.io](https://img.itch.zone/aW1nLzIwMTkyNzgxLnBuZw==/347x500/ZyBzIh.png)](https://oguhs-cookies.itch.io/zelda-knockoff)
+
+[![Itch.io](https://img.shields.io/badge/Play%20on-Itch.io-red?style=for-the-badge&logo=itch.io)](https://yourgame.itch.io/)
