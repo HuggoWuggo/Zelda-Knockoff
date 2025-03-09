@@ -7,7 +7,7 @@ Just credit me if you do.
 Any Issues, you know where to go.
 
 <p align="center">
-  <a href="https://yourgame.itch.io/">
-  [![Itch.io](https://img.shields.io/badge/Play%20on-Itch.io-red?style=for-the-badge&logo=itch.io)](https://oguhs-cookies.itch.io/zelda-knockoff)
+  <a href="https://oguhs-cookies.itch.io/zelda-knockoff">
+    <img src="https://img.shields.io/badge/Play%20on-Itch.io-red?style=for-the-badge&logo=itch.io" alt="Play on Itch.io" />
   </a>
 </p>
