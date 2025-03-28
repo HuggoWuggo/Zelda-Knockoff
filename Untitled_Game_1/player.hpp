@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <vector>
+#include <array>
 #include <cstdint>
 #include <optional>
 
@@ -37,15 +38,17 @@ private:
 	bool start;
 	bool falling = false;
 	bool isJumping = false;
+	bool isPickingUp = false;
 
 	// Store the current animation state
 	std::string currentAnimation; // Default animation
+	std::vector<std::array<int, 2>> changed;
 
 	void move(float speed, std::vector<Tile> tiles, Maps* maps);
 	void move_tiles(Maps *maps);
 	void fade_clock();
 	void isFalling();
-	void pickup();
+	void modify(Maps* maps, int index, int n_tile);
 };
 
 #endif // DEBUG

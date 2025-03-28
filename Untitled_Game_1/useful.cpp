@@ -97,7 +97,8 @@ bool TileMap::load(const std::filesystem::path& tileset, sf::Vector2u tileSize, 
                 i,
                 cell,
                 tiles_c[i + j * 10] != '_',// Set collidable to true if the cell is collidable
-                tiles_c[i + j * 10]
+                tiles_c[i + j * 10],
+                tiles[i*j*10]
                 });
         }
     }
@@ -244,7 +245,7 @@ void TileMap::draw(sf::RenderTarget& target, sf::RenderStates states) const
     // Draw the vertex array
     target.draw(m_vertices, states);
 
-    for (auto c : cells)
+    for (auto& c : cells)
         window->draw(c.shape);  // Draw the cell
 
 }

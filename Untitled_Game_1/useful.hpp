@@ -19,7 +19,8 @@ struct Tile {
 	int y;
 	sf::RectangleShape shape;
 	bool collidable;
-	char type;
+	char type_c;
+	int type_i;
 };
 
 struct Maps {
@@ -37,13 +38,13 @@ public:
 	int* processFileAndReturnInts(const std::string& filename, size_t& size, Maps *maps);
 	char* processFileAndReturnChars(const std::string& filename, size_t& size, Maps *maps);
 
+	int tile_v[110];
+	char tile_c_v[110];
+
 	std::vector<Tile> cells;
 private:
 
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
-
-	int tile_v[110];
-	char tile_c_v[110];
 
 	sf::RectangleShape cell;
 	sf::RenderWindow *window;

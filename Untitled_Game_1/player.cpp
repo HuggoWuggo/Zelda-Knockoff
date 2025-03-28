@@ -108,6 +108,9 @@ void Player::move(float speed, std::vector<Tile> tiles, Maps* maps)
     // Create a vector to accumulate direction inputs
     sf::Vector2f direction(0.f, 0.f);
 
+    if (canMove == false)
+        direction = { 0.f, 0.f };
+
     // Check each direction (WASD or arrow keys)
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
         direction.y -= 1.f; // Move up
@@ -170,7 +173,7 @@ void Player::move(float speed, std::vector<Tile> tiles, Maps* maps)
     for (auto& tile : tiles) {
         sf::FloatRect nextPosition = m_player.getGlobalBounds();
 
-        if (tile.collidable && tile.type != '_') {
+        if (tile.collidable && tile.type_c != '_') {
             // Calculate the player's next position based on the movement direction
             if (direction.x > 0)
                 nextPosition.position.x += speed;  // Moving right
@@ -184,10 +187,10 @@ void Player::move(float speed, std::vector<Tile> tiles, Maps* maps)
             // Check for collisions in the intended direction
             if (nextPosition.findIntersection(tile.shape.getGlobalBounds())) {
                 // Block movement in the direction of the collision
-                if (tile.collidable && tile.type == 'f') {
+                if (tile.collidable && tile.type_c == 'f') {
 					falling = true;
                 }
-                else if (tile.collidable && tile.type == 'p' && sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Q)) {
+                else if (tile.collidable && tile.type_c == 'p' && sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Q)) {
                     canMove = false;
 
                     if (currentAnimation == "walk_down") {
@@ -202,7 +205,8 @@ void Player::move(float speed, std::vector<Tile> tiles, Maps* maps)
                     else if (currentAnimation == "walk_right") {
                         s_player.switchAnimation("pickup_r");
                     }
-                    
+
+                    modify(maps, tile.index, 52);
                 }
                 else {
                     if (direction.x > 0)
@@ -284,6 +288,7 @@ void Player::move_tiles(Maps* maps) {
             std::cerr << "Error: Could not load tilemap." << std::endl;
         }
         start = false;
+        changed.clear();
     }
 
     // Clean up after processing the new level
@@ -353,6 +358,21 @@ void Player::update(sf::Time dt, std::vector<Tile> tiles, Maps *maps)
     s_player.update(dt);
 }
 
-void Player::pickup()
+void Player::modify(Maps* maps, int index, int n_tile)
 {
+    size_t size = 0;
+    size_t size_c = 0;
+    std::string file_name = "Maps/row_" + std::to_string(maps->x) + ".txt";
+
+    changed.push_back({index, n_tile});
+
+    int* level = maps->map->processFileAndReturnInts(file_name, size, maps);
+    char* level_c = maps->map->processFileAndReturnChars(file_name, size_c, maps);
+
+    for (auto index : changed) {
+        level[index[0]] = index[1];
+        level_c[index[0]] = '_';
+    }
+
+    maps->map->load("res/overworld.png", { 64, 64 }, level, level_c, 10, 11);
 }
